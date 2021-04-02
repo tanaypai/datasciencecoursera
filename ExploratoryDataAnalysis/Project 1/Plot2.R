@@ -1,0 +1,27 @@
+library("data.table")
+
+setwd("~/R Programs/datasciencecoursera/4_Exploratory_Data_Analysis/project/data")
+
+#Reading the Data from the file and then subsetting
+
+PowerTable <- data.table::fread(input = "household_power_consumption.txt"
+                             , na.strings="?"
+)
+
+# Makes sure tthat scientific notation is prevented
+PowerTable[, Global_active_power := lapply(.SD, as.numeric), .SDcols = c("Global_active_power")]
+
+
+PowerTable[, dateTime := as.POSIXct(paste(Date, Time), format = "%d/%m/%Y %H:%M:%S")]
+
+# Filtering the Dates for 2007-02-01 and 2007-02-02
+PowerTable <- PowerTable[(dateTime >= "2007-02-01") & (dateTime < "2007-02-03")]
+
+png("plot2.png", width=480, height=480)
+
+## Plot 2
+plot(x = PowerTable[, dateTime]
+     , y = PowerTable[, Global_active_power]
+     , type="l", xlab="", ylab="Global Active Power (kilowatts)")
+
+dev.off()
